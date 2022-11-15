@@ -1,8 +1,5 @@
 {
   "profiles": {
-    "QueueSender": {
-      "commandName": "Project"
-    },
     "QueueProcess": {
       "commandName": "Project"
     }

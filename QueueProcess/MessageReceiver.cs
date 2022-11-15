@@ -48,6 +48,9 @@ namespace QueueProcess
             // get the message body as a string
             string body = receivedMessage.Body.ToString();
 
+            // complete the message. message is deleted from the queue. 
+            await receiver.CompleteMessageAsync(receivedMessage);
+
             return body;
         }
 
@@ -78,8 +81,14 @@ namespace QueueProcess
             };
             client = new ServiceBusClient(_stringConnectionSas, clientOptions);
 
+            //options of service bus queue treatment.
+            var serviceBusProcessorOptions = new ServiceBusProcessorOptions()
+            {
+                MaxConcurrentCalls = 1,
+                AutoCompleteMessages = false
+            };
             // create a processor that we can use to process the messages
-            processor = client.CreateProcessor(_queueName, new ServiceBusProcessorOptions());
+            processor = client.CreateProcessor(_queueName, serviceBusProcessorOptions);
 
             try
             {

@@ -2,12 +2,15 @@
 using System;
 using System.Threading.Tasks;
 
-namespace QueueReceiver
+namespace QueueProcess
 {
+    /// <summary>
+    /// Class of message receiver/consumer adapter.
+    /// </summary>
     public class MessageReceiver
     {
-        private readonly string _stringConnectionSas;// = @"Endpoint=sb://idgordersrct.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=o3poGu91Yvglzl+ofhncCtolPMcyQFFUDwM145J2xQs=";
-        private readonly string _queueName;// = @"capturenotification";
+        private readonly string _stringConnectionSas;
+        private readonly string _queueName;
 
         /// <summary>
         /// Ctor.
@@ -20,7 +23,13 @@ namespace QueueReceiver
             _queueName = queueName;
         }
 
-        public async Task ReceiveMessageAsync()
+        #region public methods
+
+        /// <summary>
+        /// Receive the first message in the queue.
+        /// </summary>
+        /// <returns></returns>
+        public async Task<string> ReceiveMessageAsync()
         {
             var clientOptions = new ServiceBusClientOptions()
             {
@@ -28,7 +37,7 @@ namespace QueueReceiver
             };
             //client = new ServiceBusClient(stringConnectionSas, clientOptions);
             // since ServiceBusClient implements IAsyncDisposable we create it with "await using"
-            await using var client = new ServiceBusClient(_stringConnectionSas, clientOptions);             
+            await using var client = new ServiceBusClient(_stringConnectionSas, clientOptions);
 
             // create a receiver that we can use to receive the message
             ServiceBusReceiver receiver = client.CreateReceiver(_queueName);
@@ -38,10 +47,14 @@ namespace QueueReceiver
 
             // get the message body as a string
             string body = receivedMessage.Body.ToString();
-            Console.WriteLine(body);
 
-            //Console.ReadKey();
+            return body;
         }
+
+        /// <summary>
+        /// Receive all message by order from the queue.
+        /// </summary>
+        /// <returns></returns>
         public async Task ReceiveAllMessageAsync()
         {
 
@@ -57,7 +70,7 @@ namespace QueueReceiver
             // Set the transport type to AmqpWebSockets so that the ServiceBusClient uses port 443. 
             // If you use the default AmqpTcp, make sure that ports 5671 and 5672 are open.
 
-            
+
 
             var clientOptions = new ServiceBusClientOptions()
             {
@@ -66,7 +79,6 @@ namespace QueueReceiver
             client = new ServiceBusClient(_stringConnectionSas, clientOptions);
 
             // create a processor that we can use to process the messages
-            // TODO: Replace the <QUEUE-NAME> placeholder
             processor = client.CreateProcessor(_queueName, new ServiceBusProcessorOptions());
 
             try
@@ -96,6 +108,9 @@ namespace QueueReceiver
                 await client.DisposeAsync();
             }
         }
+        #endregion
+
+        #region private methods
 
         // handle received messages
         private static async Task MessageHandler(ProcessMessageEventArgs args)
@@ -113,5 +128,9 @@ namespace QueueReceiver
             Console.WriteLine(args.Exception.ToString());
             return Task.CompletedTask;
         }
+
+        #endregion
+
+
     }
 }

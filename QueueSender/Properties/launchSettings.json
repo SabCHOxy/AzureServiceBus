@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "QueueSender": {
+      "commandName": "Project"
+    },
+    "QueueProcess": {
+      "commandName": "Executable"
+    }
+  }
+}

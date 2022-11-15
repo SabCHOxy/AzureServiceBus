@@ -1,65 +1,43 @@
 ﻿using System;
-using System.Threading.Tasks;
-using Azure.Messaging.ServiceBus;
+using System.Collections.Generic;
 
-namespace QueueSender
+namespace QueueProcess
 {
+    /// <summary>
+    /// Class program to test features.
+    /// </summary>
     class Program
     {
-        static async Task Main(string[] args)
-        {            
+        static readonly string stringConnectionSas = 
+            @"Endpoint=sb://idgordersrct.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=o3poGu91Yvglzl+ofhncCtolPMcyQFFUDwM145J2xQs=";
+        static readonly string queueName =
+            @"capturenotification";
 
-            // the client that owns the connection and can be used to create senders and receivers
-            ServiceBusClient client;
+        static void Main(string[] args)
+        {
+            //init.
+            var msgSender = new MessageSender(stringConnectionSas, queueName);
+            var msgReceiver = new MessageReceiver(stringConnectionSas, queueName);
 
-            // the sender used to publish messages to the queue
-            ServiceBusSender sender;
+            Console.WriteLine(@"///////**** Sending ****\\\\\\\\");
 
-            // number of messages to be sent to the queue
-            const int numOfMessages = 2;
+            //first method.
+            Console.WriteLine("First message");
+            msgSender.SendMessage("Simple message to test").GetAwaiter().GetResult();
 
-            // The Service Bus client types are safe to cache and use as a singleton for the lifetime
-            // of the application, which is best practice when messages are being published or read
-            // regularly.
-            //
-            // set the transport type to AmqpWebSockets so that the ServiceBusClient uses the port 443. 
-            // If you use the default AmqpTcp, you will need to make sure that the ports 5671 and 5672 are open
-            var stringConnectionSas = @"Endpoint=sb://idgordersrct.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=o3poGu91Yvglzl+ofhncCtolPMcyQFFUDwM145J2xQs=";
-            var queueName = @"capturenotification";
+            //second method.
+            var listMessage = new List<string>() { "Second message", "Third message" , "Fourth message" };
+            Console.WriteLine("List of message");
+            msgSender.SendMessageWithinBatch(listMessage).GetAwaiter().GetResult();
 
-            var clientOptions = new ServiceBusClientOptions()
-            {
-                TransportType = ServiceBusTransportType.AmqpWebSockets
-            };
-            client = new ServiceBusClient(stringConnectionSas, clientOptions);
-            sender = client.CreateSender(queueName);
+            Console.WriteLine(@"///////**** Receiving ****\\\\\\\\");
 
-            // create a batch 
-            using ServiceBusMessageBatch messageBatch = await sender.CreateMessageBatchAsync();
+            //receive the first message sended.
+            var body  = msgReceiver.ReceiveMessageAsync().GetAwaiter().GetResult();
+            Console.WriteLine($"Received: {body}");
 
-            for (int i = 1; i <= numOfMessages; i++)
-            {
-                // try adding a message to the batch
-                if (!messageBatch.TryAddMessage(new ServiceBusMessage($"POC message testing {i}")))
-                {
-                    // if it is too large for the batch
-                    throw new Exception($"The message {i} is too large to fit in the batch.");
-                }
-            }
-
-            try
-            {
-                // Use the producer client to send the batch of messages to the Service Bus queue
-                await sender.SendMessagesAsync(messageBatch);
-                Console.WriteLine($"A batch of {numOfMessages} messages has been published to the queue.");
-            }
-            finally
-            {
-                // Calling DisposeAsync on client types is required to ensure that network
-                // resources and other unmanaged objects are properly cleaned up.
-                await sender.DisposeAsync();
-                await client.DisposeAsync();
-            }
+            //receive all message sended in the queue by order.
+            msgReceiver.ReceiveAllMessageAsync().GetAwaiter().GetResult();
 
             Console.WriteLine("Press any key to end the application");
             Console.ReadKey();

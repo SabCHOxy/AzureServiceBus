@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\testRepo\\AzureServiceBus\\QueueSender\\QueueProcess.csproj": {}
+    "C:\\testRepo\\AzureServiceBus\\QueueProcess\\QueueProcess.csproj": {}
   },
   "projects": {
-    "C:\\testRepo\\AzureServiceBus\\QueueSender\\QueueProcess.csproj": {
+    "C:\\testRepo\\AzureServiceBus\\QueueProcess\\QueueProcess.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\testRepo\\AzureServiceBus\\QueueSender\\QueueProcess.csproj",
+        "projectUniqueName": "C:\\testRepo\\AzureServiceBus\\QueueProcess\\QueueProcess.csproj",
         "projectName": "QueueProcess",
-        "projectPath": "C:\\testRepo\\AzureServiceBus\\QueueSender\\QueueProcess.csproj",
-        "packagesPath": "C:\\Users\\ext_adm_schikha\\.nuget\\packages\\",
-        "outputPath": "C:\\testRepo\\AzureServiceBus\\QueueSender\\obj\\",
+        "projectPath": "C:\\testRepo\\AzureServiceBus\\QueueProcess\\QueueProcess.csproj",
+        "packagesPath": "C:\\Users\\ext_schikha\\.nuget\\packages\\",
+        "outputPath": "C:\\testRepo\\AzureServiceBus\\QueueProcess\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\ext_adm_schikha\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\ext_schikha\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
